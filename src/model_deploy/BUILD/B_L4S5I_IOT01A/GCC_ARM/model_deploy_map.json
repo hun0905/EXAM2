@@ -24,10 +24,10 @@
     {
         "module": "[fill]",
         "size": {
-            ".text": 222,
-            ".data": 10,
-            ".bss": 47,
-            ".text-delta": 0,
+            ".text": 240,
+            ".data": 13,
+            ".bss": 41,
+            ".text-delta": -40,
             ".data-delta": 0,
             ".bss-delta": 0
         }
@@ -35,7 +35,7 @@
     {
         "module": "[lib]/c.a",
         "size": {
-            ".text": 48708,
+            ".text": 52512,
             ".data": 2474,
             ".bss": 89,
             ".text-delta": 0,
@@ -57,7 +57,7 @@
     {
         "module": "[lib]/m.a",
         "size": {
-            ".text": 692,
+            ".text": 3128,
             ".data": 1,
             ".bss": 0,
             ".text-delta": 0,
@@ -77,6 +77,17 @@
         }
     },
     {
+        "module": "[lib]/nosys.a",
+        "size": {
+            ".text": 32,
+            ".data": 0,
+            ".bss": 0,
+            ".text-delta": 0,
+            ".data-delta": 0,
+            ".bss-delta": 0
+        }
+    },
+    {
         "module": "[lib]/stdc++.a",
         "size": {
             ".text": 40,
@@ -88,14 +99,36 @@
         }
     },
     {
-        "module": "main.o",
+        "module": "accelerometer_handler.o",
         "size": {
-            ".text": 3950,
-            ".data": 4,
-            ".bss": 2171,
+            ".text": 242,
+            ".data": 9,
+            ".bss": 2410,
             ".text-delta": 0,
             ".data-delta": 0,
             ".bss-delta": 0
+        }
+    },
+    {
+        "module": "magic_wand_model_data.o",
+        "size": {
+            ".text": 0,
+            ".data": 0,
+            ".bss": 0,
+            ".text-delta": 0,
+            ".data-delta": 0,
+            ".bss-delta": 0
+        }
+    },
+    {
+        "module": "main.o",
+        "size": {
+            ".text": 5052,
+            ".data": 48,
+            ".bss": 64119,
+            ".text-delta": 40,
+            ".data-delta": 0,
+            ".bss-delta": 40
         }
     },
     {
@@ -220,6 +253,17 @@
         }
     },
     {
+        "module": "tensorflowlite_mbed/tensorflow",
+        "size": {
+            ".text": 23582,
+            ".data": 192,
+            ".bss": 0,
+            ".text-delta": 0,
+            ".data-delta": 0,
+            ".bss-delta": 0
+        }
+    },
+    {
         "module": "wifi_mqtt/MQTT",
         "size": {
             ".text": 1832,
@@ -232,9 +276,9 @@
     },
     {
         "summary": {
-            "static_ram": 19728,
-            "static_ram_delta": 0,
-            "total_flash": 128064,
+            "static_ram": 84328,
+            "static_ram_delta": 40,
+            "total_flash": 159528,
             "total_flash_delta": 0
         }
     }

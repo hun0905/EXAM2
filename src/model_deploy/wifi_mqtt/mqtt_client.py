@@ -32,7 +32,7 @@ def on_message(mosq, obj, msg):
         Y = Y[range(10)] # remove the conjugate frequency parts
         fig, ax = plt.subplots(2, 1)
         ax[0].plot(t,y)
-        ax[0].set_xlabel('gesture_ID')
+        ax[0].set_xlabel('change of direction')
         ax[0].set_ylabel('times')
 def on_subscribe(mosq, obj, mid, granted_qos):
     print("Subscribed OK")
