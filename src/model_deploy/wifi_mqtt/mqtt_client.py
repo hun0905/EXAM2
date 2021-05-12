@@ -1,7 +1,8 @@
 import paho.mqtt.client as paho
 import time
 import serial
-
+import matplotlib.pyplot as plt
+import numpy as np
 serdev = '/dev/ttyACM0'                # use the device name you get from `ls /dev/ttyACM*`
 s = serial.Serial(serdev, 9600)
 # https://os.mbed.com/teams/mqtt/wiki/Using-MQTT#python-client
@@ -32,8 +33,18 @@ def on_message(mosq, obj, msg):
         Y = Y[range(10)] # remove the conjugate frequency parts
         fig, ax = plt.subplots(2, 1)
         ax[0].plot(t,y)
-        ax[0].set_xlabel('change of direction')
-        ax[0].set_ylabel('times')
+        ax[0].set_xlabel('times')
+        ax[0].set_ylabel('change of direction')
+        s.write(bytes("/printdata2/run\r", 'UTF-8'))
+        for x in range(0, 10):
+            line=s.readline() # Read an echo string from B_L4S5I_IOT01A terminated with '\n'
+            # print line
+            y[x] = float(line)
+        ax[1].plot(t,y,'r') # plotting the spectrum
+        ax[1].set_xlabel('times')
+        ax[1].set_ylabel('gesture_ID')
+        plt.show()
+s.close()
 def on_subscribe(mosq, obj, mid, granted_qos):
     print("Subscribed OK")
 

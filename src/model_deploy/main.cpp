@@ -36,10 +36,15 @@ void printdata(Arguments *in, Reply *out)
 {
     for(int i = 0 ; i < 10 ; i++)
         printf("%d",data[i]);
+}
+void printdata2(Arguments *in, Reply *out)
+{
     for(int j = 0 ; j < 10 ; j++)
         printf("%d",gesture_ID[j]);
 }
 //RPCFunction rpcm(&stop, "stop");
+RPCFunction rpc_p1(&printdata, "printdata");
+RPCFunction rpc_p2(&printdata2, "printdata2");
 Thread t;
 bool p = false;
 int16_t pData[3] = {0};
@@ -248,7 +253,7 @@ void record(void) {
 
 void startRecord(void) {
    printf("---start---\n");
-   times = 0;
+   
    tmp = 0;
    data[times] = 0;
    idR[indexR++] = queue.call_every(1ms, record);
@@ -258,7 +263,11 @@ void startRecord(void) {
 void stopRecord(void) {
     printf("case of change direction %d\n", data[times]);
     printf("---stop---\n");
-    p = true;
+    if(times == 10)
+    {
+      p = true;
+      ThisThread::sleep_for(5ms);
+    }
     ThisThread::sleep_for(5ms);
     times++;
     for (auto &i : idR)
@@ -269,6 +278,7 @@ void acc(Arguments *in, Reply *out)
    
    BSP_ACCELERO_Init();
    printf("Start accelerometer init\n");
+   times = 0;
    t.start(callback(&queue, &EventQueue::dispatch_forever));
    btnRecord.fall(queue.event(startRecord));
    btnRecord.rise(queue.event(stopRecord));
