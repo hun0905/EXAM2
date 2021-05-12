@@ -21,10 +21,42 @@
 void gesture();
 void gesture_UI();
 int PredictGesture(float* output) ;
+void acc_capture(Arguments *in, Reply *out);
 Thread t_g;
 EventQueue queue_g(32 * EVENTS_EVENT_SIZE);
 
+InterruptIn btnRecord(USER_BUTTON);
+EventQueue queue(32 * EVENTS_EVENT_SIZE);
+Thread t;
 
+int16_t pDataXYZ[3] = {0};
+int idR[32] = {0};
+int indexR = 0;
+
+void record(void) {
+   BSP_ACCELERO_AccGetXYZ(pDataXYZ);
+   printf("%d, %d, %d\n", pDataXYZ[0], pDataXYZ[1], pDataXYZ[2]);
+}
+
+void startRecord(void) {
+   printf("---start---\n");
+   idR[indexR++] = queue.call_every(1ms, record);
+   indexR = indexR % 32;
+}
+
+void stopRecord(void) {
+   printf("---stop---\n");
+   for (auto &i : idR)
+      queue.cancel(i);
+}
+void (Arguments *in, Reply *out)
+{
+   printf("Start accelerometer init\n");
+   BSP_ACCELERO_Init();
+   t.start(callback(&queue, &EventQueue::dispatch_forever));
+   btnRecord.fall(queue.event(startRecord));
+   btnRecord.rise(queue.event(stopRecord));
+}
 void gesture_UI(Arguments *in, Reply *out){
   bool success = true;
   t_g.start(callback(&queue_g, &EventQueue::dispatch_forever));
@@ -163,7 +195,7 @@ int main() {
   char buf[256], outbuf[256];
   FILE *devin = fdopen(&pc, "r");
   FILE *devout = fdopen(&pc, "w");
-
+  /*
   wifi = WiFiInterface::get_default_instance();
   if (!wifi) {
           printf("ERROR: No WiFiInterface found.\r\n");
@@ -204,6 +236,7 @@ int main() {
   btn2.rise(mode_queue.event(&mode));
   //btn3.rise(&close_mqtt);
   mqtt_queue.call_every(500ms,&publish_message, &client);
+  */
   while(1) {
     memset(buf, 0, 256);      // clear buffer
     for(int i=0; ; i++) {
