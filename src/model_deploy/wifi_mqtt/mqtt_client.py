@@ -21,29 +21,27 @@ def on_connect(self, mosq, obj, rc):
 
 def on_message(mosq, obj, msg):
     print("[Received] Topic: " + msg.topic + ", Message: " + str(msg.payload) + "\n")
-    if str(msg.payload)[2] ==  "1" and str(msg.payload)[2] ==  "0":
-        s.write(bytes("/printdata/run\r", 'UTF-8'))
-        
-        for x in range(0, 10):
-            line=s.readline() # Read an echo string from B_L4S5I_IOT01A terminated with '\n'
-            # print line
-            y[x] = float(line)
-
-        Y = y # fft computing and normalization
-        Y = Y[range(10)] # remove the conjugate frequency parts
-        fig, ax = plt.subplots(2, 1)
-        ax[0].plot(t,y)
-        ax[0].set_xlabel('times')
-        ax[0].set_ylabel('change of direction')
-        s.write(bytes("/printdata2/run\r", 'UTF-8'))
-        for x in range(0, 10):
-            line=s.readline() # Read an echo string from B_L4S5I_IOT01A terminated with '\n'
-            # print line
-            y[x] = float(line)
-        ax[1].plot(t,y,'r') # plotting the spectrum
-        ax[1].set_xlabel('times')
-        ax[1].set_ylabel('gesture_ID')
-        plt.show()
+    s.write(bytes("/printdata/run\r", 'UTF-8'))
+    
+    for x in range(0, 10):
+        line=s.readline() # Read an echo string from B_L4S5I_IOT01A terminated with '\n'
+        # print line
+        y[x] = float(line)
+    Y = y # fft computing and normalization
+    Y = Y[range(10)] # remove the conjugate frequency parts
+    fig, ax = plt.subplots(2, 1)
+    ax[0].plot(t,y)
+    ax[0].set_xlabel('times')
+    ax[0].set_ylabel('change of direction')
+    s.write(bytes("/printdata2/run\r", 'UTF-8'))
+    for x in range(0, 10):
+        line=s.readline() # Read an echo string from B_L4S5I_IOT01A terminated with '\n'
+        # print line
+        y[x] = float(line)
+    ax[1].plot(t,y,'r') # plotting the spectrum
+    ax[1].set_xlabel('times')
+    ax[1].set_ylabel('gesture_ID')
+    plt.show()
 s.close()
 def on_subscribe(mosq, obj, mid, granted_qos):
     print("Subscribed OK")

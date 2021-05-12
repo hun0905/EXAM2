@@ -22,6 +22,17 @@
 void gesture();
 void gesture_UI();
 int PredictGesture(float* output) ;
+void Display(int &i);
+void Display(int &i)
+{
+    uLCD.cls();
+    uLCD.text_width(2); //4X size text
+    uLCD.text_height(2);
+    uLCD.locate(4,4);
+    uLCD.printf("%d",i);
+    uLCD.line(0, 50, 160, 50, 0xFF0000);
+    uLCD.line(0, 90, 160, 90, 0xFF0000);
+}
 void acc(Arguments *in, Reply *out);
 Thread t_g;
 int gesture_ID[10];
@@ -194,6 +205,7 @@ void gesture()
         
         error_reporter->Report(config.output_message[gesture_index]);
         gesture_ID[times] = gesture_index;
+        Display(gesture_ID[times] );
         times++;
     }
   }
