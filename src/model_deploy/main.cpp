@@ -25,19 +25,34 @@ int PredictGesture(float* output) ;
 void acc(Arguments *in, Reply *out);
 Thread t_g;
 EventQueue queue_g(32 * EVENTS_EVENT_SIZE);
-
+EventQueue mqtt_queue;
+Thread mqtt_thread(osPriorityHigh);
 InterruptIn btnRecord(USER_BUTTON);
 EventQueue queue(32 * EVENTS_EVENT_SIZE);
 BufferedSerial pc(USBTX, USBRX);
+int data[10] ;
+void printdata(Arguments *in, Reply *out)
+{
+    for(int i = 0 ; i < 10 ; i++)
+        printf("%d",data[i]);
+}
+//RPCFunction rpcm(&stop, "stop");
 Thread t;
-
+bool p = false;
 int16_t pData[3] = {0};
 int idR[32] = {0};
 int indexR = 0;
 int times = 0;
 RPCFunction rpc_acc(&acc, "acc");
 int gesture_ID = 0;
-int data[20] ;
+
+volatile bool closed = false;
+constexpr int kTensorArenaSize = 60 * 1024;
+const char* topic = "Mbed";
+volatile int message_num = 0;
+volatile int arrivedcount = 0;
+WiFiInterface *wifi;
+bool mode_acc = true;
 
 void messageArrived(MQTT::MessageData& md) {
     MQTT::Message &message = md.message;
@@ -52,7 +67,7 @@ void messageArrived(MQTT::MessageData& md) {
 }
 
 void publish_message(MQTT::Client<MQTTNetwork, Countdown>* client) {
-    if(mode_p)
+    if(p == true)
     {
       MQTT::Message message;
       char buff[100];
@@ -66,7 +81,7 @@ void publish_message(MQTT::Client<MQTTNetwork, Countdown>* client) {
   
       printf("rc:  %d\r\n", rc);
       printf("Puslish message: %s\r\n", buff);
-      mode_p = false;
+      p = false;
     }
 }
 
@@ -100,6 +115,8 @@ void startRecord(void) {
 void stopRecord(void) {
     printf("case of change direction %d\n", data[gesture_ID]);
     printf("---stop---\n");
+    p = true;
+    ThisThread::sleep_for(5ms);
     gesture_ID++;
     for (auto &i : idR)
       queue.cancel(i);
@@ -140,7 +157,7 @@ int main() {
   MQTTNetwork mqttNetwork(net);
   MQTT::Client<MQTTNetwork, Countdown> client(mqttNetwork);
   //TODO: revise host to your IP
-  const char* host = "192.168.145.190";
+  const char* host = "192.168.195.230";
   printf("Connecting to TCP network...\r\n");
 
   SocketAddress sockAddr;
@@ -161,10 +178,10 @@ int main() {
   if (client.subscribe(topic, MQTT::QOS0, messageArrived) != 0){
           printf("Fail to subscribe\r\n");
   }  
-  t_mode.start(callback(&mode_queue, &EventQueue::dispatch_forever));
-  mqtt_thread.start(callback(&mqtt_queue, &EventQueue::dispatch_forever));
   
-  btnRecord.fall(mqtt_queue.event(&publish_message, &client));
+    mqtt_thread.start(callback(&mqtt_queue, &EventQueue::dispatch_forever));
+  
+    mqtt_queue.call_every(5ms,&publish_message, &client);
   
   
   while(1) {
